@@ -82,4 +82,9 @@ export const translations = {
   },
 } as const;
 
-export type Translations = typeof translations['en'];
+// Widened to string so both 'en' and 'es' variants satisfy the type
+export type Translations = {
+  [K in keyof typeof translations['en']]: {
+    [P in keyof typeof translations['en'][K]]: string;
+  };
+};
