@@ -1,3 +1,5 @@
+'use client';
+
 import { motion } from 'framer-motion';
 import { PortfolioProject } from '../../data/portfolio';
 import { useLanguage } from '../../contexts/LanguageContext';

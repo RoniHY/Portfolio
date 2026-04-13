@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef, useState } from 'react';
 import { useScroll, useTransform, useMotionValueEvent, motion } from 'framer-motion';
 import { experiences } from '../../data/experience';

@@ -21,8 +21,7 @@
   --color-border-strong: rgba(92, 61, 46, 0.35);
 
   /* --- TYPOGRAPHY --- */
-  --font-heading: 'Lora', Georgia, serif;
-  --font-body:    'Inter', system-ui, sans-serif;
+  /* --font-heading and --font-body are set by next/font on <html> */
 
   --text-xs:   0.72rem;   /* 11.5px — captions, dates uppercase */
   --text-sm:   0.875rem;  /* 14px — tags, small labels */

@@ -1,3 +1,5 @@
+'use client';
+
 import { motion } from 'framer-motion';
 import { FaInstagram, FaGithub, FaLinkedin } from 'react-icons/fa';
 import { useActiveSection } from '../../hooks/useActiveSection';
