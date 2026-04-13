@@ -1,0 +1,120 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  /* Fixed dark color — never changes with theme */
+  background-color: #1C1A14;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6) 0;
+  z-index: 200;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.navLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-4) 0;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.25s ease;
+}
+
+.navLink:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.navLinkActive {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.navText {
+  writing-mode: vertical-lr;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  font-weight: 500;
+  user-select: none;
+}
+
+.activeIndicator {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 32px;
+  background: var(--color-accent-2);
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+}
+
+.social {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  align-items: center;
+  padding-bottom: var(--space-4);
+}
+
+.socialBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1.1rem;
+  transition: color 0.25s ease;
+}
+
+.socialBtn:hover {
+  color: var(--color-accent-2);
+}
+
+/* ── Language toggle ── */
+.langToggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 5px 8px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  transition: border-color 0.25s ease;
+}
+
+.langToggle:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.langActive {
+  color: var(--color-accent-2);
+  font-weight: 600;
+}
+
+.langInactive {
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 400;
+}
+
+.langDivider {
+  color: rgba(255, 255, 255, 0.2);
+  margin: 0 1px;
+}

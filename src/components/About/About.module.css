@@ -1,0 +1,91 @@
+.about {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+  background-color: var(--color-bg-elevated);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding-top: var(--space-6);
+}
+
+.title {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  text-transform: uppercase;
+  color: var(--color-text);
+  position: relative;
+  padding-bottom: var(--space-4);
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--color-accent);
+  border-radius: var(--radius-full);
+}
+
+.btnMeeting {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-accent);
+  color: var(--color-accent);
+  background: transparent;
+  width: fit-content;
+  transition: var(--t-base);
+}
+
+.btnMeeting:hover {
+  background: var(--color-accent);
+  color: var(--color-text-inv);
+}
+
+.bio {
+  font-size: var(--text-base);
+  line-height: var(--leading-loose);
+  color: var(--color-text-2);
+  max-width: 540px;
+}
+
+/* Image side */
+.imageWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.photo {
+  width: clamp(280px, 28vw, 420px);
+  height: clamp(380px, 55vh, 600px);
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+  display: block;
+  position: relative;
+  z-index: 1;
+  box-shadow: var(--shadow-xl);
+}
+
+.imageBorder {
+  position: absolute;
+  inset: -12px 12px 12px -12px;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-xl);
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+}
