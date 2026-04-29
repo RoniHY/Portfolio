@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { PortfolioProject } from '../../data/portfolio';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -14,7 +15,7 @@ const cardVariants = {
 
 export function PortfolioCard({ project }: Props) {
   const { lang, t } = useLanguage();
-  const { title, description, tags, url, image, hue } = project;
+  const { id, title, description, tags, image, hue } = project;
 
   return (
     <motion.article
@@ -33,16 +34,14 @@ export function PortfolioCard({ project }: Props) {
           />
         )}
         <div className={styles.overlay}>
-          <motion.a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.overlayLink}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            {t.portfolio.viewProject}
-          </motion.a>
+          <motion.span whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              href={`/projects/${id}`}
+              className={styles.overlayLink}
+            >
+              {t.portfolio.viewProject}
+            </Link>
+          </motion.span>
         </div>
       </div>
 

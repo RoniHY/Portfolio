@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { inter, lora } from './fonts';
+import { LanguageProvider } from '@/contexts/LanguageContext';
+import { GsapProvider } from '@/components/shared/GsapProvider';
 import '@/styles/variables.css';
 import '@/styles/reset.css';
 import '@/styles/global.css';
@@ -7,7 +9,7 @@ import '@/styles/global.css';
 export const metadata: Metadata = {
   title: 'Pedro Gutierrez — Portfolio',
   description:
-    'Portfolio, CV, and professional experience of Pedro Gutierrez — Digital Marketer',
+    'Portfolio and professional services of Pedro Gutierrez — Software Development, Digital Marketing & Design.',
 };
 
 export default function RootLayout({
@@ -17,7 +19,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${lora.variable}`}>
-      <body>{children}</body>
+      <body>
+        <LanguageProvider>
+          <GsapProvider>
+            {children}
+          </GsapProvider>
+        </LanguageProvider>
+      </body>
     </html>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-const SECTIONS = ['home', 'about', 'experience', 'portfolio', 'resume'];
+const SECTIONS = ['home', 'about', 'services', 'experience', 'portfolio', 'resume', 'contact'];
 
 export function useActiveSection(): string {
   const [active, setActive] = useState('home');
@@ -18,14 +18,25 @@ export function useActiveSection(): string {
         ([entry]) => {
           if (entry.isIntersecting) setActive(id);
         },
-        { threshold: 0.4, rootMargin: '-10% 0px -10% 0px' }
+        { threshold: 0.3 }
       );
 
       obs.observe(el);
       observers.push(obs);
     });
 
-    return () => observers.forEach((o) => o.disconnect());
+    const handleScroll = () => {
+      const nearBottom =
+        window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
+      if (nearBottom) setActive('contact');
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      observers.forEach((o) => o.disconnect());
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   return active;

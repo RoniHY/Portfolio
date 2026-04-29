@@ -1,0 +1,10 @@
+.main {
+  min-height: 100vh;
+}
+
+.body {
+  padding-left: calc(var(--sidebar-w) + var(--space-16));
+  padding-right: var(--space-16);
+  padding-top: var(--space-12);
+  max-width: calc(var(--sidebar-w) + var(--space-16) + 860px);
+}

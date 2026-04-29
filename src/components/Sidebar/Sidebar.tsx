@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 import { FaInstagram, FaGithub, FaLinkedin } from 'react-icons/fa';
 import { useActiveSection } from '../../hooks/useActiveSection';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -13,16 +14,23 @@ const SOCIAL = [
 ];
 
 export function Sidebar() {
-  const active = useActiveSection();
-  const { t } = useLanguage();
+  const active   = useActiveSection();
+  const { lang, t, toggle } = useLanguage();
+  const pathname = usePathname();
+  const isHome   = pathname === '/';
 
   const NAV_LINKS = [
     { id: 'home',       label: t.nav.home },
     { id: 'about',      label: t.nav.about },
+    { id: 'services',   label: t.nav.services },
     { id: 'experience', label: t.nav.experience },
     { id: 'portfolio',  label: t.nav.portfolio },
     { id: 'resume',     label: t.nav.resume },
+    { id: 'contact',    label: t.nav.contact },
   ];
+
+  const href = (id: string) => isHome ? `#${id}` : `/#${id}`;
+  const isActive = (id: string) => isHome ? active === id : false;
 
   return (
     <header className={styles.sidebar}>
@@ -30,14 +38,14 @@ export function Sidebar() {
         {NAV_LINKS.map(({ id, label }) => (
           <motion.a
             key={id}
-            href={`#${id}`}
-            className={`${styles.navLink} ${active === id ? styles.navLinkActive : ''}`}
-            aria-current={active === id ? 'page' : undefined}
+            href={href(id)}
+            className={`${styles.navLink} ${isActive(id) ? styles.navLinkActive : ''}`}
+            aria-current={isActive(id) ? 'page' : undefined}
             whileHover={{ x: 2 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
           >
             <span className={styles.navText}>{label}</span>
-            {active === id && (
+            {isActive(id) && (
               <motion.span
                 className={styles.activeIndicator}
                 layoutId="activeBar"
@@ -49,10 +57,21 @@ export function Sidebar() {
       </nav>
 
       <div className={styles.social}>
-        {SOCIAL.map(({ href, icon: Icon, label }) => (
+        <motion.button
+          className={styles.langToggle}
+          onClick={toggle}
+          aria-label={lang === 'en' ? 'Cambiar a español' : 'Switch to English'}
+          whileTap={{ scale: 0.94 }}
+        >
+          <span className={lang === 'en' ? styles.langActive : styles.langInactive}>EN</span>
+          <span className={styles.langDivider}>/</span>
+          <span className={lang === 'es' ? styles.langActive : styles.langInactive}>ES</span>
+        </motion.button>
+
+        {SOCIAL.map(({ href: socialHref, icon: Icon, label }) => (
           <motion.a
             key={label}
-            href={href}
+            href={socialHref}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={label}
