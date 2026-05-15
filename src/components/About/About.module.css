@@ -44,16 +44,29 @@
   text-transform: uppercase;
   padding: 12px 24px;
   border-radius: var(--radius-full);
-  border: 2px solid var(--color-accent);
-  color: var(--color-accent);
+  border: 2px solid #000;
+  color: #000;
   background: transparent;
   width: fit-content;
   transition: var(--t-base);
 }
 
 .btnMeeting:hover {
-  background: var(--color-accent);
-  color: var(--color-text-inv);
+  background: #000;
+  color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .btnMeeting {
+    border-color: rgba(245, 240, 235, 0.45);
+    color: var(--color-text);
+  }
+
+  .btnMeeting:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+  }
 }
 
 .bio {
