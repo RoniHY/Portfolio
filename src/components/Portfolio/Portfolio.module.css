@@ -102,17 +102,16 @@
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   font-weight: 600;
-  color: #fff;
-  background: #000;
-  border: 2px solid #000;
+  color: #F5F0EB;
+  border: 1.5px solid rgba(245, 240, 235, 0.6);
   padding: 10px 22px;
   border-radius: var(--radius-full);
   transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .overlayLink:hover {
-  background: #262626;
-  border-color: #262626;
+  background: rgba(245, 240, 235, 0.15);
+  border-color: #F5F0EB;
 }
 
 /* Card body */

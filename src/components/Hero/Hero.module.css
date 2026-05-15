@@ -83,39 +83,25 @@
 }
 
 .btnPrimary {
-  background-color: #000;
-  color: #fff;
-  border: 2px solid #000;
+  background-color: var(--color-accent);
+  color: var(--color-text-inv);
+  border: 2px solid var(--color-accent);
 }
 
 .btnPrimary:hover {
-  background-color: #262626;
-  border-color: #262626;
+  background-color: var(--color-accent-2);
+  border-color: var(--color-accent-2);
 }
 
 .btnOutline {
   background-color: transparent;
-  color: #000;
-  border: 2px solid #000;
+  color: var(--color-text);
+  border: 2px solid var(--color-border-strong);
 }
 
 .btnOutline:hover {
-  background-color: #000;
-  border-color: #000;
-  color: #fff;
-}
-
-@media (prefers-color-scheme: dark) {
-  .btnOutline {
-    color: var(--color-text);
-    border-color: rgba(245, 240, 235, 0.45);
-  }
-
-  .btnOutline:hover {
-    background-color: #fff;
-    border-color: #fff;
-    color: #000;
-  }
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .langSwitch {

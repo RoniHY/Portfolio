@@ -77,6 +77,7 @@ export function ServicesPage() {
               target="_blank"
               rel="noopener noreferrer"
               className={styles.serviceCta}
+              style={{ background: `hsl(${service.hue}deg 38% 38%)` }}
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: 'spring', stiffness: 400, damping: 20 }}

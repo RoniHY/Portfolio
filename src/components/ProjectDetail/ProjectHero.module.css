@@ -130,12 +130,12 @@
 }
 
 .linkBtn {
-  background: #000;
-  color: #fff;
+  background: rgba(245, 240, 235, 0.95);
+  color: #2A2018;
 }
 
 .linkBtn:hover {
-  background: #262626;
+  background: #fff;
   transform: translateY(-2px);
 }
 
