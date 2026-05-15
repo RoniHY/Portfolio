@@ -84,24 +84,138 @@ src/i18n/translations.ts      ← Namespaces: nav, hero, about, experience, port
 - [ ] **Galería de proyecto** — `ProjectGallery` component no fue implementado; el campo `gallery: string[]` está en el schema listo para usarse
 - [ ] **SEO / OG images** — `generateMetadata` en `/projects/[slug]` ya existe; agregar `openGraph.images` cuando haya imágenes reales
 
-### Dashboard / CMS (próxima fase grande)
+### Dashboard / CMS — fase activa
 
-- [ ] **Gestión dinámica de proyectos e imágenes desde un dashboard**
-  - Actualmente los proyectos están hardcodeados en `src/data/portfolio.ts` — cualquier cambio requiere editar código
-  - **Opción recomendada: Sanity Studio**
-    - Schema de `project` en Sanity mapea 1:1 con `PortfolioProject` (ya tiene el schema listo en `portfolio.ts`)
-    - `ServicesSection`, `PortfolioSection` y `/projects/[slug]` pasan de leer el array local a hacer fetch al Sanity client
-    - Imágenes se suben directo desde el dashboard y Sanity devuelve URLs optimizadas (CDN propio)
-    - `generateStaticParams` pasa a ser dinámico con revalidación ISR (`revalidate: 60`)
-    - Studio embebible en `/studio` dentro del mismo repo Next.js
-  - **Alternativas:** Contentful (más enterprise), Payload CMS (self-hosted, full control), Notion API (muy simple pero limitado)
-  - **Pasos cuando se implemente:**
-    1. `npm i @sanity/client @sanity/image-url next-sanity`
-    2. Crear proyecto en sanity.io, copiar `projectId` y `dataset`
-    3. Definir schema en `sanity/schemas/project.ts` basado en `PortfolioProject`
-    4. Crear `src/lib/sanity.ts` con el cliente y queries GROQ
-    5. Reemplazar imports de `src/data/portfolio.ts` en `PortfolioSection`, `PortfolioCard`, y `/projects/[slug]/page.tsx`
-    6. Agregar `NEXT_PUBLIC_SANITY_PROJECT_ID` y `NEXT_PUBLIC_SANITY_DATASET` a `.env.local`
+**Objetivo:** gestionar proyectos e imágenes desde `/admin` sin tocar código.
+
+**Stack decidido:**
+- **MongoDB Atlas** (free M0) — almacena los documentos de proyectos
+- **Mongoose** — schema tipado + queries
+- **NextAuth.js v5** con Credentials provider — protege `/admin` (usuario único: Pedro)
+- **Cloudflare R2** — almacenamiento de imágenes (10 GB free, egress ilimitado)
+- **Next.js Server Actions** — mutaciones CRUD sin API routes extra
+
+#### Arquitectura objetivo
+
+```
+src/
+  lib/
+    mongodb.ts              ← singleton de conexión (evita múltiples conexiones en dev)
+    models/
+      Project.ts            ← Mongoose model (mapea PortfolioProject 1:1)
+    r2.ts                   ← cliente R2 (@aws-sdk/client-s3 con endpoint Cloudflare)
+    auth.ts                 ← config NextAuth (credentials provider)
+  app/
+    admin/
+      layout.tsx            ← verifica sesión, redirige a /admin/login si no autenticado
+      page.tsx              ← dashboard: lista proyectos con acciones edit/delete
+      login/
+        page.tsx            ← formulario email + password
+      projects/
+        new/page.tsx        ← formulario crear proyecto
+        [id]/
+          page.tsx          ← formulario editar proyecto
+    api/
+      auth/[...nextauth]/
+        route.ts            ← handler de NextAuth
+      upload/
+        route.ts            ← recibe archivo → sube a R2 → devuelve URL pública
+```
+
+#### Plan paso a paso
+
+**Fase 1 — MongoDB (30 min)**
+
+- [ ] **1.1** Crear cluster M0 en [mongodb.com](https://mongodb.com) → copiar connection string
+- [ ] **1.2** Instalar dependencias:
+  ```bash
+  npm i mongoose next-auth@beta
+  ```
+- [ ] **1.3** Agregar a `.env.local`:
+  ```
+  MONGODB_URI=mongodb+srv://...
+  NEXTAUTH_SECRET=genera-con-openssl-rand-base64-32
+  ADMIN_EMAIL=pdgutierrezcarrera@gmail.com
+  ADMIN_PASSWORD=elige-password-seguro
+  ```
+- [ ] **1.4** Crear `src/lib/mongodb.ts` — singleton de conexión con cache para dev (evita el error de múltiples conexiones con hot reload)
+- [ ] **1.5** Crear `src/lib/models/Project.ts` — Mongoose Schema basado en `PortfolioProject`:
+  - Todos los campos bilingües como `{ en: String, es: String }`
+  - `slug` generado automáticamente desde `title.en` (pre-save hook)
+  - `order` (Number) para controlar posición en el grid
+  - `image` y `gallery` como strings (URLs de R2)
+
+**Fase 2 — Cloudflare R2 (30 min)**
+
+- [ ] **2.1** Crear bucket en [Cloudflare R2 dashboard](https://dash.cloudflare.com) → habilitar acceso público
+- [ ] **2.2** Generar API token con permisos `Object Read & Write` para el bucket
+- [ ] **2.3** Agregar a `.env.local`:
+  ```
+  R2_ACCOUNT_ID=xxxx
+  R2_ACCESS_KEY_ID=xxxx
+  R2_SECRET_ACCESS_KEY=xxxx
+  R2_BUCKET_NAME=portfolio-images
+  R2_PUBLIC_URL=https://pub-xxxx.r2.dev   ← URL pública del bucket
+  ```
+- [ ] **2.4** Instalar SDK y crear helper:
+  ```bash
+  npm i @aws-sdk/client-s3 @aws-sdk/lib-storage
+  ```
+- [ ] **2.5** Crear `src/lib/r2.ts` — función `uploadToR2(file, filename)` que devuelve la URL pública
+- [ ] **2.6** Crear `src/app/api/upload/route.ts` — recibe `multipart/form-data`, llama a `uploadToR2`, devuelve `{ url }`
+
+**Fase 3 — Auth con NextAuth (20 min)**
+
+- [ ] **3.1** Crear `src/lib/auth.ts` — config NextAuth con Credentials provider:
+  - Compara `email` y `password` contra `ADMIN_EMAIL` y `ADMIN_PASSWORD` en env (sin DB de usuarios — solo un admin)
+- [ ] **3.2** Crear `src/app/api/auth/[...nextauth]/route.ts`
+- [ ] **3.3** Crear `src/app/admin/login/page.tsx` — form simple email/password con `signIn()`
+- [ ] **3.4** Crear `src/app/admin/layout.tsx` — llama a `auth()`, redirige a `/admin/login` si no hay sesión
+
+**Fase 4 — Dashboard admin (60 min)**
+
+- [ ] **4.1** `src/app/admin/page.tsx` — lista todos los proyectos con botones Edit / Delete
+  - Delete llama a Server Action que elimina de MongoDB y borra imagen de R2
+- [ ] **4.2** Componente `ProjectForm.tsx` (compartido entre new y edit):
+  - Campos: title (en/es), description (en/es), category, tags, client, year, role, liveUrl, repoUrl, order
+  - Image upload: input file → POST a `/api/upload` → guarda URL en estado → preview
+  - Content blocks: lista dinámica de bloques (heading/paragraph/list) con add/remove
+  - Results: métricas (label en/es + value) + stack (array de strings)
+- [ ] **4.3** `src/app/admin/projects/new/page.tsx` — usa `ProjectForm`, llama a Server Action `createProject`
+- [ ] **4.4** `src/app/admin/projects/[id]/page.tsx` — carga proyecto, usa `ProjectForm`, llama a `updateProject`
+- [ ] **4.5** Server Actions en `src/app/admin/actions.ts`:
+  - `createProject(formData)` → inserta en MongoDB
+  - `updateProject(id, formData)` → actualiza en MongoDB
+  - `deleteProject(id)` → elimina de MongoDB + borra objeto de R2
+
+**Fase 5 — Conectar portafolio al DB (45 min)**
+
+- [ ] **5.1** Crear `src/lib/projects.ts` con funciones de lectura:
+  - `getAllProjects()` — para el grid de home
+  - `getProjectBySlug(slug)` — para `/projects/[slug]`
+  - `getAllSlugs()` — para `generateStaticParams`
+- [ ] **5.2** Convertir `PortfolioSection.tsx` a Server Component — reemplaza import de `portfolio.ts` por `getAllProjects()`
+- [ ] **5.3** Actualizar `/projects/[slug]/page.tsx`:
+  - `generateStaticParams` → `getAllSlugs()` desde MongoDB
+  - Página → `getProjectBySlug(slug)` + `export const revalidate = 60`
+- [ ] **5.4** Adaptar `PortfolioCard`, `ProjectHero`, `ProjectContent`, `ProjectResults` a los tipos de Mongoose
+
+**Fase 6 — Migrar datos y deploy (30 min)**
+
+- [ ] **6.1** Entrar al dashboard en `/admin` y crear los 3 proyectos (copiar desde `portfolio.ts`)
+- [ ] **6.2** Subir imágenes de proyectos desde el formulario de admin
+- [ ] **6.3** Verificar que el grid y las páginas de detalle funcionan correctamente
+- [ ] **6.4** Agregar variables de entorno en Vercel
+- [ ] **6.5** Correr `npm run build` — verificar que ISR funciona
+- [ ] **6.6** Eliminar `src/data/portfolio.ts` (o marcarlo como legacy)
+
+#### Convenciones post-migración
+
+- `getAllProjects()` y `getProjectBySlug()` son llamadas de servidor — nunca en Client Components
+- Campos bilingües se resuelven en el componente con `useLanguage()` — MongoDB devuelve `{ en, es }` y el componente elige
+- Imágenes siempre via URL pública de R2 — nunca rutas `/public/` para assets de proyectos
+- El admin NO tiene estilos elaborados — funcional y simple está bien
+- `revalidate = 60` en rutas que lean de MongoDB
 
 ### Baja prioridad / ideas futuras
 
